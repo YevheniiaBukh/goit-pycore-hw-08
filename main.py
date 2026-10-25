@@ -1,4 +1,6 @@
 from info import Record, AddressBook
+import pickle
+
 
 def parse_input(user_input):
     cmd, *args = user_input.split()
@@ -86,41 +88,62 @@ def birthdays(args, book):
         f"{contact['name']}: {contact['birthday']}" for contact in upcoming
     )
 
- 
+
+
+def save_data(book, filename="addressbook.pkl"):
+    with open(filename, "wb") as f:
+        pickle.dump(book, f)
+
+
+def load_data(filename="addressbook.pkl"):
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return AddressBook()  # Повернення нової адресної книги, якщо файл не знайдено
+
 
 def main():
-    book = AddressBook()
+    book = load_data()
     print("Welcome to the assistant bot!")
 
-    while True:
-        user_input = input("Enter a command: ")
-        if not user_input.strip():
-            print("Imput cannot be empty.")
-            continue
-        
-        command, *args = parse_input(user_input)
-        
-        if command in ["close", "exit"]:
-            print("Good bye!")
-            break
-        elif command == "hello":
-            print("How can I help you?")
-        elif command == "add":
-            print(add_contact(args, book))
-        elif command == "change":
-            print(change_contact(args, book))
-        elif command == "phone":
-             print(show_phone(args, book))
-        elif command == "all":
-            print(show_all(book))
-        elif command == "add-birthday":
-            print(add_birthday(args, book))
-        elif command == "show-birthday":
-            print(show_birthday(args, book))
-        elif command == "birthdays":
-            print(birthdays(args, book))
-        else:
-            print("Invalid command.")
+    try:
+        while True:
+            try:
+                user_input = input("Enter a command: ")
+            except (EOFError, KeyboardInterrupt):
+                print("\nGood bye!")
+                break
+
+            if not user_input.strip():
+                print("Imput cannot be empty.")
+                continue
+
+            command, *args = parse_input(user_input)
+
+            if command in ["close", "exit"]:
+                print("Good bye!")
+                break
+            elif command == "hello":
+                print("How can I help you?")
+            elif command == "add":
+                print(add_contact(args, book))
+            elif command == "change":
+                print(change_contact(args, book))
+            elif command == "phone":
+                print(show_phone(args, book))
+            elif command == "all":
+                print(show_all(book))
+            elif command == "add-birthday":
+                print(add_birthday(args, book))
+            elif command == "show-birthday":
+                print(show_birthday(args, book))
+            elif command == "birthdays":
+                print(birthdays(args, book))
+            else:
+                print("Invalid command.")
+    finally:
+        save_data(book)
 
 
 if __name__ == "__main__":
