@@ -1,5 +1,9 @@
 from info import Record, AddressBook
 import pickle
+from pathlib import Path
+
+
+DATA_FILE = Path(__file__).with_name("addressbook.pkl")
 
 
 def parse_input(user_input):
@@ -90,12 +94,12 @@ def birthdays(args, book):
 
 
 
-def save_data(book, filename="addressbook.pkl"):
+def save_data(book, filename=DATA_FILE):
     with open(filename, "wb") as f:
         pickle.dump(book, f)
 
 
-def load_data(filename="addressbook.pkl"):
+def load_data(filename=DATA_FILE):
     try:
         with open(filename, "rb") as f:
             return pickle.load(f)
